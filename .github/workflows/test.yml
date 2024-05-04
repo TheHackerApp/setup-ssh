@@ -1,0 +1,72 @@
+---
+name: Test
+
+"on":
+  - push
+
+env:
+  KEY_1_PRIVATE: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACDYAmWq0A7MsfD9an049FyHX8Js+E65ItDilH1892okDQAAAJA8p0fiPKdH
+    4gAAAAtzc2gtZWQyNTUxOQAAACDYAmWq0A7MsfD9an049FyHX8Js+E65ItDilH1892okDQ
+    AAAEBpHJL4QATAqmf5K4JMsHGDyzvSD7s1JCqx79cXLY2fQtgCZarQDsyx8P1qfTj0XIdf
+    wmz4Trki0OKUfXz3aiQNAAAAB2tleSBvbmUBAgMEBQY=
+    -----END OPENSSH PRIVATE KEY-----
+  KEY_1_PUBLIC: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINgCZarQDsyx8P1qfTj0XIdfwmz4Trki0OKUfXz3aiQN key one
+  KEY_2_PRIVATE: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACAJtJ0McAb7zIJPyy5ZVAsXipnvVGt3bUvtl05eqW4G7AAAAJA+CCbpPggm
+    6QAAAAtzc2gtZWQyNTUxOQAAACAJtJ0McAb7zIJPyy5ZVAsXipnvVGt3bUvtl05eqW4G7A
+    AAAEBGNgfwJ4ZWynUL8hHVzwZNnLzXKKrB6m6pwKiVx9hFAwm0nQxwBvvMgk/LLllUCxeK
+    me9Ua3dtS+2XTl6pbgbsAAAAB2tleSB0d28BAgMEBQY=
+    -----END OPENSSH PRIVATE KEY-----
+  KEY_2_PUBLIC: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAm0nQxwBvvMgk/LLllUCxeKme9Ua3dtS+2XTl6pbgbs key two
+
+jobs:
+  single-key:
+    name: Single Key
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: TheHackerApp/setup-ssh
+        uses: ./
+        with:
+          private-key: ${{ env.KEY_1_PRIVATE }}
+
+      - name: Check key added
+        run: ssh-add -L | grep "${{ env.KEY_1_PUBLIC }}"
+
+  multi-key:
+    name: Multiple Keys
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: TheHackerApp/setup-ssh
+        uses: ./
+        with:
+          private-key: |
+            ${{ env.KEY_1_PRIVATE }}
+            ${{ env.KEY_2_PRIVATE }}
+
+      - name: Check key 1 added
+        run: ssh-add -L | grep "${{ env.KEY_1_PUBLIC }}"
+      - name: Check key 2 added
+        run: ssh-add -L | grep "${{ env.KEY_2_PUBLIC }}"
+
+  no-host:
+    name: No Host Key Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: TheHackerApp/setup-ssh
+        uses: ./
+        with:
+          private-key: ${{ env.KEY_1_PRIVATE }}
+
+      - name: Check known_hosts empty
+        run: test ! -s ~/.ssh/known_hosts
