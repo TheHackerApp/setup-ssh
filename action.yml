@@ -8,7 +8,7 @@ branding:
 inputs:
   host:
     description: Hostname of the SSH server
-    required: true
+    required: false
   private-key:
     description: PEM-encoded SSH private key for pulling the Shipyard registry index
     required: true
@@ -22,6 +22,7 @@ runs:
 
     - name: Add host key to .ssh/known_hosts
       shell: bash
+      if: inputs.host
       run: |
         mkdir -p ~/.ssh
         touch ~/.ssh/known_hosts
