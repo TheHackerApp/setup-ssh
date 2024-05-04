@@ -1,0 +1,28 @@
+---
+name: Setup SSH
+description: Setup the SSH agent and known hosts
+branding:
+  icon: command
+  color: white
+
+inputs:
+  host:
+    description: Hostname of the SSH server
+    required: true
+  private-key:
+    description: PEM-encoded SSH private key for pulling the Shipyard registry index
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ inputs.private-key }}
+
+    - name: Add host key to .ssh/known_hosts
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        touch ~/.ssh/known_hosts
+        ssh-keyscan ${{ inputs.host }} >> ~/.ssh/known_hosts
