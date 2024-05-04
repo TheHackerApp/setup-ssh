@@ -7,10 +7,10 @@ branding:
 
 inputs:
   host:
-    description: Hostname of the SSH server
+    description: Hostname of the SSH server. Multiple hosts can be provided as a multiline string.
     required: false
   private-key:
-    description: PEM-encoded SSH private key for pulling the Shipyard registry index
+    description: PEM-encoded SSH private key for pulling the Shipyard registry index. Multiple keys can be provided as a multiline string.
     required: true
 
 runs:
@@ -20,10 +20,18 @@ runs:
       with:
         ssh-private-key: ${{ inputs.private-key }}
 
-    - name: Add host key to .ssh/known_hosts
+    - name: Ensure .ssh/known_hosts exists
       shell: bash
       if: inputs.host
       run: |
         mkdir -p ~/.ssh
         touch ~/.ssh/known_hosts
-        ssh-keyscan ${{ inputs.host }} >> ~/.ssh/known_hosts
+
+    - name: Add host key(s) to .ssh/known_hosts
+      shell: bash
+      if: inputs.host
+      run: |
+        IFS=$'\n' hosts=(${{ inputs.host }})
+        for host in "${hosts[@]}"; do
+          ssh-keyscan $host >> ~/.ssh/known_hosts
+        done
