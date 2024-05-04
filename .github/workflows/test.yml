@@ -58,7 +58,7 @@ jobs:
         run: ssh-add -L | grep "${{ env.KEY_2_PUBLIC }}"
 
   no-host:
-    name: No Host Key Scanning
+    name: known_hosts Empty (No Host)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,3 +70,37 @@ jobs:
 
       - name: Check known_hosts empty
         run: test ! -s ~/.ssh/known_hosts
+
+  single-host:
+    name: known_hosts Single Host
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: TheHackerApp/setup-ssh
+        uses: ./
+        with:
+          host: github.com
+          private-key: ${{ env.KEY_1_PRIVATE }}
+
+      - name: Check known_hosts single host
+        run: grep github.com ~/.ssh/known_hosts
+
+  multiple-hosts:
+    name: known_hosts Multiple Hosts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: TheHackerApp/setup-ssh
+        uses: ./
+        with:
+          host: |
+            github.com
+            ssh.shipyard.rs
+          private-key: ${{ env.KEY_1_PRIVATE }}
+
+      - name: Check github.com in known_hosts
+        run: grep github.com ~/.ssh/known_hosts
+      - name: Check github.com in known_hosts
+        run: grep ssh.shipyard.rs ~/.ssh/known_hosts
