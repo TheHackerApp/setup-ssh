@@ -29,7 +29,7 @@ jobs:
     name: Single Key
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: TheHackerApp/setup-ssh
         uses: ./
@@ -43,7 +43,7 @@ jobs:
     name: Multiple Keys
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: TheHackerApp/setup-ssh
         uses: ./
@@ -61,7 +61,7 @@ jobs:
     name: known_hosts Empty (No Host)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: TheHackerApp/setup-ssh
         uses: ./
@@ -75,7 +75,7 @@ jobs:
     name: known_hosts Single Host
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: TheHackerApp/setup-ssh
         uses: ./
@@ -90,7 +90,7 @@ jobs:
     name: known_hosts Multiple Hosts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: TheHackerApp/setup-ssh
         uses: ./
